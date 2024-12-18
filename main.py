@@ -1,6 +1,7 @@
 import tkinter as tk
 import random
 import json
+import keyboard
 
 WINDOW_WIDTH = 650
 WINDOW_HEIGHT = 800
@@ -15,6 +16,7 @@ IDIOMS_DICT = load_from_json("./idioms.json")
 
 class SnakeGame:
     def __init__(self, root):
+
         # 遊戲設定
         self.SNAKE_SIZE = 30         # 貪吃蛇身體的大小
         self.GAME_WIDTH = 600        # 遊戲寬度
@@ -80,7 +82,7 @@ class SnakeGame:
         food_text = self.canvas.create_text(
             x + self.SNAKE_SIZE // 2, y + self.SNAKE_SIZE // 2,
             text=character, fill=self.TEXT_COLOR,
-            font=("Arial", self.FONT_SIZE), tag="food"
+            font=("微軟正黑體", self.FONT_SIZE), tag="food"
         )
         self.food_texts.append(food_text)
 
@@ -158,9 +160,13 @@ class SnakeGame:
         idiom, meaning = random.choice(list(IDIOMS_DICT.items()))
         return idiom,meaning
 # 啟動遊戲
-def start_game():
-    root = tk.Tk()
+def start_game(root):
     game = SnakeGame(root)
     root.mainloop()
+    
+
 if __name__ == "__main__":
-    start_game()
+    root = tk.Tk()
+    root.geometry('+0+0')
+    start_game(root )
+    
