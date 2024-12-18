@@ -1,6 +1,8 @@
 import tkinter as tk
 import random
 
+WINDOW_WIDTH = 650
+WINDOW_HEIGHT = 800
 class SnakeGame:
     def __init__(self, root):
         # 遊戲設定
@@ -22,16 +24,20 @@ class SnakeGame:
 
         # 初始化遊戲變數
         self.snake = [(240, 240), (230, 240), (220, 240)]  # 初始蛇身
-        self.food = None
-        self.food_text = None
+        
         self.food_options = ["快", "智", "勇", "和", "友", "希"]  # 隨機中文文字
         self.direction = "Right"
         self.running = True
         self.score = 0
 
+        self.food = None
+        self.food_text = None
+        self.foods = []
+        self.food_texts = []
+        self.idiom = "畫龍點睛" # *This is a test value
         # 畫蛇和食物
         self.draw_snake()
-        self.spawn_food()
+        self.spawn_idiom()
 
         # 綁定鍵盤事件
         self.root.bind("<Up>", lambda e: self.change_direction("Up"))
@@ -51,20 +57,23 @@ class SnakeGame:
                 fill=self.SNAKE_COLOR, tag="snake"
             )
 
-    def spawn_food(self):
-        if self.food:
-            self.canvas.delete(self.food_text)
+    def spawn_food(self,character):
+        # if self.food:
+        #     self.canvas.delete(self.food_text)
         while True:
             x = random.randint(0, (self.GAME_WIDTH // self.SNAKE_SIZE) - 1) * self.SNAKE_SIZE
             y = random.randint(0, (self.GAME_HEIGHT // self.SNAKE_SIZE) - 1) * self.SNAKE_SIZE
-            if (x, y) not in self.snake:
+            if ((x, y) not in self.snake) and ((x,y) not in self.foods):
                 self.food = (x, y)
+                self.foods.append((x,y))
                 break
-        self.food_text = self.canvas.create_text(
+        food_text = self.canvas.create_text(
             x + self.SNAKE_SIZE // 2, y + self.SNAKE_SIZE // 2,
-            text=random.choice(self.food_options), fill=self.TEXT_COLOR,
+            text=character, fill=self.TEXT_COLOR,
             font=("Arial", self.FONT_SIZE), tag="food"
         )
+        self.food_text = food_text
+        self.food_texts.append(food_text)
 
     def change_direction(self, new_direction):
         # 防止蛇逆行
@@ -102,9 +111,13 @@ class SnakeGame:
 
         # 更新蛇身
         self.snake.insert(0, new_head)
-        if new_head == self.food:
+        if new_head == self.foods[0]:
+
             self.score += 1
-            self.spawn_food()
+            self.foods.pop(0)
+            self.canvas.delete(self.food_texts.pop(0))
+            if len(self.food_texts) == 0:
+                self.spawn_idiom()
         else:
             self.snake.pop()
 
@@ -121,9 +134,14 @@ class SnakeGame:
             self.GAME_WIDTH // 2, self.GAME_HEIGHT // 2,
             text=f"Game Over!\nscore={self.score}", fill="white", font=("Arial", 20)
         )
+    def spawn_idiom(self):
+        for character in self.idiom:
+            self.spawn_food(character)
+        self.idiom_display.config(text=self.idiom)
 
 # 啟動遊戲
 if __name__ == "__main__":
     root = tk.Tk()
+    
     game = SnakeGame(root)
     root.mainloop()
