@@ -158,9 +158,9 @@ class SnakeGame:
         idiom, meaning = random.choice(list(IDIOMS_DICT.items()))
         return idiom,meaning
 # 啟動遊戲
-if __name__ == "__main__":
+def start_game():
     root = tk.Tk()
-    
     game = SnakeGame(root)
     root.mainloop()
-    
+if __name__ == "__main__":
+    start_game()
