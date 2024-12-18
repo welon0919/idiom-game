@@ -1,8 +1,18 @@
 import tkinter as tk
 import random
+import json
 
 WINDOW_WIDTH = 650
 WINDOW_HEIGHT = 800
+
+
+def load_from_json(filepath):
+    with open(filepath,'r',encoding='utf-8') as f:
+        data = json.load(f)
+    return data
+
+IDIOMS_DICT = load_from_json("./idioms.json")
+
 class SnakeGame:
     def __init__(self, root):
         # 遊戲設定
@@ -17,16 +27,18 @@ class SnakeGame:
         # 初始化主視窗
         self.root = root
         self.root.title("貪吃蛇遊戲")
-        self.idiom_display = tk.Label(font=("Arial",70))
-        self.idiom_display.pack()
+        self.score_display = tk.Label(font=("Arial",20),height=1)
+        self.idiom_display = tk.Label(font=("微軟正黑體",30),height=2)
+        self.idiom_display.pack(fill=tk.X)
+        self.score_display.pack(fill=tk.X)
         self.canvas = tk.Canvas(root, width=self.GAME_WIDTH, height=self.GAME_HEIGHT, bg="white")
         self.canvas.pack()
 
         # 初始化遊戲變數
         self.snake = [(240, 240), (230, 240), (220, 240)]  # 初始蛇身
         
-        self.food_options = ["快", "智", "勇", "和", "友", "希"]  # 隨機中文文字
         self.direction = "Right"
+        self.direction_updated = True
         self.running = True
         self.score = 0
 
@@ -35,6 +47,7 @@ class SnakeGame:
         self.foods = []
         self.food_texts = []
         self.idiom = "畫龍點睛" # *This is a test value
+        self.idiom_meaning = ""
         # 畫蛇和食物
         self.draw_snake()
         self.spawn_idiom()
@@ -58,13 +71,10 @@ class SnakeGame:
             )
 
     def spawn_food(self,character):
-        # if self.food:
-        #     self.canvas.delete(self.food_text)
         while True:
             x = random.randint(0, (self.GAME_WIDTH // self.SNAKE_SIZE) - 1) * self.SNAKE_SIZE
             y = random.randint(0, (self.GAME_HEIGHT // self.SNAKE_SIZE) - 1) * self.SNAKE_SIZE
             if ((x, y) not in self.snake) and ((x,y) not in self.foods):
-                self.food = (x, y)
                 self.foods.append((x,y))
                 break
         food_text = self.canvas.create_text(
@@ -72,7 +82,6 @@ class SnakeGame:
             text=character, fill=self.TEXT_COLOR,
             font=("Arial", self.FONT_SIZE), tag="food"
         )
-        self.food_text = food_text
         self.food_texts.append(food_text)
 
     def change_direction(self, new_direction):
@@ -83,7 +92,8 @@ class SnakeGame:
             "Left": "Right",
             "Right": "Left",
         }
-        if new_direction != opposite_directions.get(self.direction):
+        if new_direction != opposite_directions.get(self.direction) and self.direction_updated:
+            self.direction_updated = False
             self.direction = new_direction
 
     def move_snake(self):
@@ -113,18 +123,22 @@ class SnakeGame:
         self.snake.insert(0, new_head)
         if new_head == self.foods[0]:
 
-            self.score += 1
             self.foods.pop(0)
             self.canvas.delete(self.food_texts.pop(0))
             if len(self.food_texts) == 0:
+                
                 self.spawn_idiom()
+                self.score += 1
         else:
             self.snake.pop()
 
     def run_game(self):
+
         if self.running:
+            self.direction_updated = True
             self.move_snake()
             self.draw_snake()
+            self.score_display.config(text=f"Score : {self.score}")
             self.root.after(100, self.run_game)
         else:
             self.game_over()
@@ -132,16 +146,21 @@ class SnakeGame:
     def game_over(self):
         self.canvas.create_text(
             self.GAME_WIDTH // 2, self.GAME_HEIGHT // 2,
-            text=f"Game Over!\nscore={self.score}", fill="white", font=("Arial", 20)
+            text=f"Game Over!", fill="white", font=("Arial", 40)
         )
     def spawn_idiom(self):
+        self.idiom, self.idiom_meaning = self.get_random_idiom()
         for character in self.idiom:
             self.spawn_food(character)
-        self.idiom_display.config(text=self.idiom)
-
+        # set the display
+        self.idiom_display.config(text=self.idiom_meaning)
+    def get_random_idiom(self):
+        idiom, meaning = random.choice(list(IDIOMS_DICT.items()))
+        return idiom,meaning
 # 啟動遊戲
 if __name__ == "__main__":
     root = tk.Tk()
     
     game = SnakeGame(root)
     root.mainloop()
+    
