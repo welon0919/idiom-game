@@ -62,7 +62,6 @@ class SnakeGame:
         self.canvas.configure(bg="black")
         # 開始遊戲
         self.run_game()
-
     def draw_snake(self):
         self.canvas.delete("snake")
         for segment in self.snake:
@@ -159,6 +158,7 @@ class SnakeGame:
     def get_random_idiom(self):
         idiom, meaning = random.choice(list(IDIOMS_DICT.items()))
         return idiom,meaning
+
 # 啟動遊戲
 def start_game(root):
     game = SnakeGame(root)
@@ -168,5 +168,6 @@ def start_game(root):
 if __name__ == "__main__":
     root = tk.Tk()
     root.geometry('+0+0')
+    root.iconbitmap("snake.ico")
     start_game(root )
     
