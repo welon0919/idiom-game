@@ -1,8 +1,7 @@
 import tkinter as tk
 import random
 import json
-import keyboard
-
+import time
 WINDOW_WIDTH = 650
 WINDOW_HEIGHT = 800
 
@@ -37,12 +36,13 @@ class SnakeGame:
         self.canvas.pack()
 
         # 初始化遊戲變數
-        self.snake = [(240, 240), (230, 240), (220, 240)]  # 初始蛇身
+        self.snake = [(240, 240), (210, 240), (180, 240)]  # 初始蛇身
         
         self.direction = "Right"
         self.direction_updated = True
         self.running = True
         self.score = 0
+        self.started = False
 
         self.food = None
         self.food_text = None
@@ -61,7 +61,8 @@ class SnakeGame:
         self.root.bind("<Right>", lambda e: self.change_direction("Right"))
         self.canvas.configure(bg="black")
         # 開始遊戲
-        self.run_game()
+        self.canvas.create_text(self.GAME_WIDTH/2,self.GAME_WIDTH/2,text="Press Space To Start",font=('Arial',40),anchor="center",tags="start_text",fill="white")
+        self.root.bind("<space>",lambda e: self.start())
     def draw_snake(self):
         self.canvas.delete("snake")
         for segment in self.snake:
@@ -158,6 +159,11 @@ class SnakeGame:
     def get_random_idiom(self):
         idiom, meaning = random.choice(list(IDIOMS_DICT.items()))
         return idiom,meaning
+    def start(self):
+        if not self.started:
+            self.started = True
+            self.canvas.delete("start_text")
+            self.run_game()    
 
 # 啟動遊戲
 def start_game(root):
