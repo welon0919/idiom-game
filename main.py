@@ -1,12 +1,23 @@
 import tkinter as tk
 import random
 import json
-import time
+import sys
+import os
 WINDOW_WIDTH = 650
 WINDOW_HEIGHT = 800
 
 
+def get_path(filename):
+    if hasattr(sys,'_MEIPASS'):
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.abspath(".")
+    file_path = os.path.join(base_path,filename)
+    return file_path
+
+
 def load_from_json(filepath):
+    filepath = get_path(filepath)
     with open(filepath,'r',encoding='utf-8') as f:
         data = json.load(f)
     return data
@@ -29,7 +40,7 @@ class SnakeGame:
         self.root = root
         self.root.title("貪吃蛇遊戲")
         self.score_display = tk.Label(font=("Arial",20),height=1)
-        self.idiom_display = tk.Label(font=("微軟正黑體",30),height=2)
+        self.idiom_display = tk.Label(font=("微軟正黑體",25),height=2)
         self.idiom_display.pack(fill=tk.X)
         self.score_display.pack(fill=tk.X)
         self.canvas = tk.Canvas(root, width=self.GAME_WIDTH, height=self.GAME_HEIGHT, bg="white")
@@ -166,6 +177,7 @@ class SnakeGame:
             self.run_game()    
 
 # 啟動遊戲
+
 def start_game(root):
     game = SnakeGame(root)
     root.mainloop()
