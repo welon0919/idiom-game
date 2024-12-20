@@ -177,8 +177,9 @@ class SnakeGame:
         return idiom,meaning
     def restart_game(self,event=None):
         if self.game_overed:
-            self.game_overed = True
+            self.game_overed = False
             self.canvas.delete("game_over_text")
+            self.canvas.delete("food")
             self.reset_game()
             self.run_game()
     def start(self):
