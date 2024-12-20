@@ -35,7 +35,6 @@ class SnakeGame:
         self.TEXT_COLOR = "red"
         self.FONT_SIZE = 25
               # 食物文字顏色
-        
         # 初始化主視窗
         self.root = root
         self.root.title("貪吃蛇遊戲")
@@ -47,6 +46,20 @@ class SnakeGame:
         self.canvas.pack()
 
         # 初始化遊戲變數
+
+        # 綁定鍵盤事件
+        self.root.bind("<Up>", lambda e: self.change_direction("Up"))
+        self.root.bind("<Down>", lambda e: self.change_direction("Down"))
+        self.root.bind("<Left>", lambda e: self.change_direction("Left"))
+        self.root.bind("<Right>", lambda e: self.change_direction("Right"))
+        self.canvas.configure(bg="black")
+        self.reset_game()
+
+        # 開始遊戲
+        self.canvas.create_text(self.GAME_WIDTH/2,self.GAME_WIDTH/2,text="Press Space To Start",font=('Arial',40),anchor="center",tags="start_text",fill="white")
+        self.root.bind("<space>",lambda e: self.start())
+        self.game_overed = False
+    def reset_game(self):
         self.snake = [(240, 240), (210, 240), (180, 240)]  # 初始蛇身
         
         self.direction = "Right"
@@ -59,21 +72,12 @@ class SnakeGame:
         self.food_text = None
         self.foods = []
         self.food_texts = []
-        self.idiom = "畫龍點睛" # *This is a test value
+        self.idiom = "" # *This is a test value
         self.idiom_meaning = ""
         # 畫蛇和食物
         self.draw_snake()
         self.spawn_idiom()
 
-        # 綁定鍵盤事件
-        self.root.bind("<Up>", lambda e: self.change_direction("Up"))
-        self.root.bind("<Down>", lambda e: self.change_direction("Down"))
-        self.root.bind("<Left>", lambda e: self.change_direction("Left"))
-        self.root.bind("<Right>", lambda e: self.change_direction("Right"))
-        self.canvas.configure(bg="black")
-        # 開始遊戲
-        self.canvas.create_text(self.GAME_WIDTH/2,self.GAME_WIDTH/2,text="Press Space To Start",font=('Arial',40),anchor="center",tags="start_text",fill="white")
-        self.root.bind("<space>",lambda e: self.start())
     def draw_snake(self):
         self.canvas.delete("snake")
         for segment in self.snake:
@@ -82,7 +86,7 @@ class SnakeGame:
                 x, y, x + self.SNAKE_SIZE, y + self.SNAKE_SIZE,
                 fill=self.SNAKE_COLOR, tag="snake"
             )
-
+    
     def spawn_food(self,character):
         while True:
             x = random.randint(0, (self.GAME_WIDTH // self.SNAKE_SIZE) - 1) * self.SNAKE_SIZE
@@ -157,9 +161,10 @@ class SnakeGame:
             self.game_over()
 
     def game_over(self):
+        self.game_overed = True
         self.canvas.create_text(
             self.GAME_WIDTH // 2, self.GAME_HEIGHT // 2,
-            text=f"Game Over!", fill="white", font=("Arial", 40)
+            text=f"Game Over!", fill="white", font=("Arial", 40),tags="game_over_text"
         )
     def spawn_idiom(self):
         self.idiom, self.idiom_meaning = self.get_random_idiom()
@@ -170,11 +175,19 @@ class SnakeGame:
     def get_random_idiom(self):
         idiom, meaning = random.choice(list(IDIOMS_DICT.items()))
         return idiom,meaning
+    def restart_game(self,event=None):
+        if self.game_overed:
+            self.game_overed = True
+            self.canvas.delete("game_over_text")
+            self.reset_game()
+            self.run_game()
     def start(self):
         if not self.started:
             self.started = True
             self.canvas.delete("start_text")
-            self.run_game()    
+            self.root.bind("<space>",self.restart_game)
+            self.run_game()
+                
 
 # 啟動遊戲
 
@@ -186,6 +199,6 @@ def start_game(root):
 if __name__ == "__main__":
     root = tk.Tk()
     root.geometry('+0+0')
-    root.iconbitmap("snake.ico")
+    root.iconbitmap(get_path("snake.ico"))
     start_game(root )
     
