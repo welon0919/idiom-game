@@ -164,7 +164,11 @@ class SnakeGame:
         self.game_overed = True
         self.canvas.create_text(
             self.GAME_WIDTH // 2, self.GAME_HEIGHT // 2,
-            text=f"Game Over!", fill="white", font=("Arial", 40),tags="game_over_text"
+            text=f"Game Over!", fill="white", font=("Arial", 60),tags="game_over_text"
+        )
+        self.canvas.create_text(
+            self.GAME_WIDTH // 2, self.GAME_HEIGHT // 2+100,
+            text=f"Press space to restart!", fill="white", font=("Arial", 20),tags="game_over_text"
         )
     def spawn_idiom(self):
         self.idiom, self.idiom_meaning = self.get_random_idiom()
