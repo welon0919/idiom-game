@@ -3,8 +3,6 @@ import random
 import json
 import sys
 import os
-import threading
-from time import sleep
 WINDOW_WIDTH = 650
 WINDOW_HEIGHT = 800
 
@@ -62,6 +60,9 @@ class SnakeGame:
         self.root.bind("<space>",lambda e: self.start())
         self.game_overed = False
     def reset_game(self):
+        """
+        Reset the attribute of the snake when restarting
+        """
         self.snake = [(240, 240), (210, 240), (180, 240)]  # 初始蛇身
         
         self.direction = "Right"
@@ -81,6 +82,9 @@ class SnakeGame:
         self.spawn_idiom()
 
     def draw_snake(self):
+        """
+        Display the snake on the screen
+        """
         self.canvas.delete("snake")
         for segment in self.snake:
             x, y = segment
@@ -90,6 +94,9 @@ class SnakeGame:
             )
     
     def spawn_food(self,character):
+        """
+        Generates food base on the character given
+        """
         while True:
             x = random.randint(0, (self.GAME_WIDTH // self.SNAKE_SIZE) - 1) * self.SNAKE_SIZE
             y = random.randint(0, (self.GAME_HEIGHT // self.SNAKE_SIZE) - 1) * self.SNAKE_SIZE
@@ -104,6 +111,9 @@ class SnakeGame:
         self.food_texts.append(food_text)
 
     def change_direction(self, new_direction):
+        """
+        Change the direction of the snake
+        """
         # 防止蛇逆行
         opposite_directions = {
             "Up": "Down",
@@ -116,7 +126,9 @@ class SnakeGame:
             self.direction = new_direction
 
     def move_snake(self):
-        
+        """
+        Move the snake, detect food eating, detect game over
+        """
         head_x, head_y = self.snake[0]
         if self.direction == "Up":
             head_y -= self.SNAKE_SIZE
@@ -155,6 +167,9 @@ class SnakeGame:
      
 
     def run_game(self):
+        """
+        Run the game main logic
+        """
         if self.running:
             self.direction_updated = True
             self.move_snake()
@@ -165,34 +180,51 @@ class SnakeGame:
             pass
 
     def game_over(self):
+        """
+        Call the killsnake when game is over
+        """
         self.idiom_meaning_display.config(text="")
         self.canvas.delete("food")
         self.kill_snake(-1)
         
     def spawn_idiom(self):
+        """
+        Generate foods with the idiom character and place the meaning
+        """
         self.idiom, self.idiom_meaning = self.get_random_idiom()
         for character in self.idiom:
             self.spawn_food(character)
         # set the display
         self.idiom_meaning_display.config(text=self.idiom_meaning)
     def get_random_idiom(self):
+        """
+        Pick a random idiom from idioms.json
+        """
         idiom, meaning = random.choice(list(IDIOMS_DICT.items()))
         return idiom,meaning
     def restart_game(self,event=None):
+        """
+        Restart the game when space is pressed
+        """
         if self.game_overed:
             self.game_overed = False
             self.canvas.delete("game_over_text")
             self.canvas.delete("food")
             self.reset_game()
             self.run_game()
-    def start(self):
-
+    def start(self):        
+        """
+        Starts the game when space is pressed
+        """
         if not self.started:
             self.started = True
             self.canvas.delete("start_text")
             self.root.bind("<space>",self.restart_game)
             self.run_game()
     def show_game_over(self):
+        """
+        Display the game over text
+        """
         self.canvas.create_text(
             self.GAME_WIDTH // 2, self.GAME_HEIGHT // 2,
             text=f"Game Over!", fill="white", font=("Arial", 60),tags="game_over_text"
@@ -202,6 +234,9 @@ class SnakeGame:
             text=f"Press space to restart!", fill="white", font=("Arial", 20),tags="game_over_text"
         )
     def kill_snake(self,index):
+        """
+        Play the death animation
+        """
         self.running = False
         
         if index < len(self.snake):
