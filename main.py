@@ -41,8 +41,8 @@ class SnakeGame:
         self.root: tk.Tk = root
         self.root.title("貪吃蛇遊戲")
         self.score_display = tk.Label(font=("Arial",20),height=1)
-        self.idiom_display = tk.Label(font=("微軟正黑體",25),height=2)
-        self.idiom_display.pack(fill=tk.X)
+        self.idiom_meaning_display = tk.Label(font=("微軟正黑體",25),height=2)
+        self.idiom_meaning_display.pack(fill=tk.X)
         self.score_display.pack(fill=tk.X)
         self.canvas = tk.Canvas(root, width=self.GAME_WIDTH, height=self.GAME_HEIGHT, bg="white")
         self.canvas.pack()
@@ -165,8 +165,8 @@ class SnakeGame:
             pass
 
     def game_over(self):
+        self.idiom_meaning_display.config(text="")
         self.canvas.delete("food")
-        self.game_overed = True
         self.kill_snake(-1)
         
     def spawn_idiom(self):
@@ -174,7 +174,7 @@ class SnakeGame:
         for character in self.idiom:
             self.spawn_food(character)
         # set the display
-        self.idiom_display.config(text=self.idiom_meaning)
+        self.idiom_meaning_display.config(text=self.idiom_meaning)
     def get_random_idiom(self):
         idiom, meaning = random.choice(list(IDIOMS_DICT.items()))
         return idiom,meaning
@@ -213,6 +213,7 @@ class SnakeGame:
             self.root.after(50,self.kill_snake,index+1)
         else:
             self.show_game_over()
+            self.game_overed = True
             self.running = False
 # 啟動遊戲
 
