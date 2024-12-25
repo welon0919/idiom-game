@@ -201,7 +201,9 @@ class SnakeGame:
         """
         Pick a random idiom from idioms.json
         """
-        idiom, meaning = random.choice(list(IDIOMS_DICT.items()))
+        idiom = self.idiom
+        while idiom == self.idiom:
+            idiom, meaning = random.choice(list(IDIOMS_DICT.items()))
         return idiom,meaning
     def restart_game(self,event=None):
         """
