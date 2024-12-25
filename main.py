@@ -46,12 +46,13 @@ class SnakeGame:
         self.canvas.pack()
 
         # 初始化遊戲變數
-
+        self.interval_id = None
         # 綁定鍵盤事件
         self.root.bind("<Up>", lambda e: self.change_direction("Up"))
         self.root.bind("<Down>", lambda e: self.change_direction("Down"))
         self.root.bind("<Left>", lambda e: self.change_direction("Left"))
         self.root.bind("<Right>", lambda e: self.change_direction("Right"))
+        self.root.bind("<Escape>",self.pause_game)
         self.canvas.configure(bg="black")
         self.reset_game()
 
@@ -175,7 +176,7 @@ class SnakeGame:
             self.move_snake()
             self.draw_snake()
             self.score_display.config(text=f"Score : {self.score}")
-            self.root.after(100, self.run_game)
+            self.interval_id = self.root.after(100, self.run_game)
         else:
             pass
 
@@ -250,6 +251,18 @@ class SnakeGame:
             self.show_game_over()
             self.game_overed = True
             self.running = False
+    def pause_game(self,event=None):
+        if (not self.started) or self.game_overed:
+            return
+
+        if self.running == True:
+            self.canvas.create_text(self.GAME_WIDTH /2, 100, text="Game Paused",fill="white",font=('Arial',30),tags="pause_text")
+            self.running = False
+            self.root.after_cancel(self.interval_id)
+        else:
+            self.running = True
+            self.canvas.delete("pause_text")
+            self.run_game()
 # 啟動遊戲
 
 def start_game(root):
