@@ -115,6 +115,8 @@ class SnakeGame:
         """
         Change the direction of the snake
         """
+        if not self.running:
+            return
         # 防止蛇逆行
         opposite_directions = {
             "Up": "Down",
